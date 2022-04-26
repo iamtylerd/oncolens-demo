@@ -76,26 +76,38 @@ const App = () => {
     updateFetchedPatients(updatedPatients);
   }
 
+  const sortColumns = (e) => {
+    // with more time i would track asc or desc and flip the sort accordingly
+    const { target } = e;
+    const { dataset } = target;
+    const { key } = dataset;
+    const unSortedPatients = [...fetchedPatients];
+    // using the < vrs - for comparing numbers and strings
+    const sortedPatients = unSortedPatients.sort((first, second) => first[key] < second[key] ? -1 : 1);
+    updateFetchedPatients(sortedPatients);
+  }
+
   return (
     <div className="App">
       <h1>Patients</h1>
       {/* could be done with a form  */}
       <table>
         <thead>
+          {/* would like to create new components and use props instead of data attr  */}
           <tr>
-            <th>
+            <th onClick={sortColumns} data-key="first_name">
               First Name
             </th>
-            <th>
+            <th onClick={sortColumns} data-key="last_name">
               Last Name
             </th>
-            <th>
+            <th onClick={sortColumns} data-key="medical_id">
               Medical ID
             </th>
-            <th>
+            <th onClick={sortColumns} data-key="age">
               Age
             </th>
-            <th>
+            <th onClick={sortColumns} data-key="sex">
               Sex
             </th>
           </tr>
