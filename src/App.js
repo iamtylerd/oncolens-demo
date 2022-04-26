@@ -8,7 +8,14 @@ const App = () => {
   const [ fetchedPatients, updateFetchedPatients ] = useState([]);
   const [ isAddingPatient, updateIsAddingPatient ] = useState(false);
   const [ searchTerm, updateSearchTerm ] = useState("");
-  const [ newPatient, updateAddNewPatient ] = useState({});
+  const [ newPatient, updateAddNewPatient ] = useState({
+    id: uuid(),
+    first_name: "",
+    last_name: "",
+    medical_id: "",
+    age: "",
+    sex: "M",
+  });
 
   useEffect(() => {
     // faking an ajax call
@@ -17,15 +24,6 @@ const App = () => {
       // where you would convert the response to json
       // const json = await data.json();
       updateFetchedPatients(data);
-      // not sure if the patient should be inited here or when its defined in useState
-      updateAddNewPatient({
-        id: uuid(),
-        first_name: "",
-        last_name: "",
-        medical_id: "",
-        age: "",
-        sex: "",
-      })
     };
   
     fetchData();
