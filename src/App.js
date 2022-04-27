@@ -1,8 +1,8 @@
-import './App.css';
-import React, { useState, useEffect } from 'react';
-import {v4 as uuid} from 'uuid';
-import { patients } from './data/patients';
-import { capitalize } from './helpers/text';
+import "./App.css";
+import React, { useState, useEffect, useCallback } from "react";
+import {v4 as uuid} from "uuid";
+import { patients } from "./data/patients";
+import { capitalize } from "./helpers/text";
 
 const App = () => {
   const [ fetchedPatients, updateFetchedPatients ] = useState([]);
@@ -17,17 +17,18 @@ const App = () => {
     sex: "M",
   });
 
+  const fetchData =  useCallback(async (data) => {
+    const fetchedData = await data;
+    // where you would convert the response to json
+    // const json = await data.json();
+    updateFetchedPatients(fetchedData);
+  }, []);
+
   useEffect(() => {
     // faking an ajax call
-    const fetchData = async () => {
-      const data = await patients;
-      // where you would convert the response to json
-      // const json = await data.json();
-      updateFetchedPatients(data);
-    };
-  
-    fetchData();
-  }, []);
+    fetchData(patients)
+    .catch(console.error)
+  }, [fetchData]);
 
   const addNewPatient = () => {
     updateIsAddingPatient(!isAddingPatient);
@@ -40,7 +41,7 @@ const App = () => {
     const { key } = dataset;
     updateAddNewPatient({
       ...newPatient,
-      [key]: capitalize(value),
+      [key]: value ? capitalize(value) : "",
     });
   };
 
@@ -87,11 +88,15 @@ const App = () => {
     updateFetchedPatients(sortedPatients);
   };
 
-  const filterPatients = (e) => {
+  const handleUpdateSearchTerm = (e) => {
     // would add some validation / data checks here
     const { target } = e;
     const { value } = target;
     updateSearchTerm(value);
+  };
+
+  const filterPatients = () => {
+    return (fetchedPatients.filter(p => new RegExp(`^${searchTerm}`, `i`).test(p.first_name.toLowerCase())));
   };
 
   return (
@@ -104,7 +109,7 @@ const App = () => {
           <tr>
             <th onClick={sortColumns} data-key="first_name">
               First Name
-              <input onChange={filterPatients} value={searchTerm} type="string" />
+              <input onChange={handleUpdateSearchTerm} value={searchTerm} type="string" />
             </th>
             <th onClick={sortColumns} data-key="last_name">
               Last Name
@@ -122,7 +127,7 @@ const App = () => {
         </thead>
         <tbody>
         {
-        fetchedPatients.filter(p =>  new RegExp(`^${searchTerm}`, `i`).test(p.first_name.toLowerCase())).map((p) => {
+        filterPatients().map((p) => {
           // convert this to function so it can handle both new and existing patients
           // would make filtering more robust by making it a function and the ability to handle multiple filters
           return (
