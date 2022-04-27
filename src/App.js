@@ -17,8 +17,8 @@ const App = () => {
     sex: "M",
   });
 
-  const fetchData =  useCallback(async (data) => {
-    const fetchedData = await data;
+  const fetchData =  useCallback(async () => {
+    const fetchedData = await patients;
     // where you would convert the response to json
     // const json = await data.json();
     updateFetchedPatients(fetchedData);
@@ -26,8 +26,11 @@ const App = () => {
 
   useEffect(() => {
     // faking an ajax call
-    fetchData(patients)
+    // since we are using useCallback i could pass in patients here
+    fetchData()
     .catch(console.error)
+    // simulate the data changing / being updated for the demo [] should suffice
+    // could hold the updates in local state and batch update so this would only need to run on load 
   }, [fetchData]);
 
   const addNewPatient = () => {
